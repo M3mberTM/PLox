@@ -1,1 +1,4 @@
 .venv/
+notes.md
+*.egg-info
+__pycache__/
