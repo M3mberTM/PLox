@@ -11,6 +11,24 @@ class Scanner:
         self.start = 0
         self.current = 0
         self.line = 1
+        self.keywords: dict[str, TokenType] = {
+            "and": TokenType.AND,
+            "or": TokenType.OR,
+            "else": TokenType.ELSE,
+            "class": TokenType.CLASS,
+            "false": TokenType.FALSE,
+            "for": TokenType.FOR,
+            "fun": TokenType.FUN,
+            "if": TokenType.IF,
+            "nil": TokenType.NIL,
+            "print": TokenType.PRINT,
+            "return": TokenType.RETURN,
+            "super": TokenType.SUPER,
+            "this": TokenType.THIS,
+            "true": TokenType.TRUE,
+            "var": TokenType.VAR,
+            "while": TokenType.WHILE
+        }
 
     def scan_tokens(self) -> list[Token]:
         while not self.is_at_end():
@@ -65,6 +83,9 @@ class Scanner:
                     # this is a comment now. Consume characters until it's the end of the line
                     while self.peek() != "\n" and not self.is_at_end():
                         self.advance()
+                elif self.match("*"):
+                    # multiline comments
+                    self.mult_comment()
                 else:
                     self.create_token(TokenType.SLASH)
             # whitespace
@@ -82,8 +103,41 @@ class Scanner:
             case _:
                 if self.is_digit(char):
                     self.number()
+                elif self.is_alpha(char):
+                    self.identifier()
                 else:
                     Reporter.error(self.line, "Unexpected character")
+
+    def mult_comment(self):
+        while (self.peek() != "*" and self.peek_next() != "/") and not self.is_at_end():
+            self.advance()
+        # don't forget to consume the final two characters
+        if self.current >= len(self.source) - 1:
+            Reporter.error(self.line, "Unterminated multine comment")
+            return
+
+        self.advance()
+        self.advance()
+
+    def identifier(self):
+        while self.is_alphanumeric(self.peek()):
+            self.advance()
+        text = self.source[self.start:self.current]
+        token_type = self.keywords.get(text)
+        if token_type is None:
+            token_type = TokenType.IDENTIFIER
+        self.create_token(token_type)
+
+    def is_alphanumeric(self, char: str) -> bool:
+        return self.is_alpha(char) or self.is_digit(char)
+
+    def is_alpha(self, char: str)->bool:
+        num = ord(char)
+        if num >= ord("a") and num <= ord("z"):
+            return True
+        if num >= ord("A") and num <= ord("Z"):
+            return True
+        return ord("_") == num
 
     def number(self):
         while self.is_digit(self.peek()):

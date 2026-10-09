@@ -2,3 +2,5 @@
 notes.md
 *.egg-info
 __pycache__/
+.vscode/
+ploxFiles/
