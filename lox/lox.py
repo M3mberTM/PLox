@@ -6,7 +6,6 @@ from .scanner import Scanner
 
 class Lox:
 
-
     @staticmethod
     def main():
         if len(sys.argv) > 2: # python gets this script path as the first argument by default
@@ -43,7 +42,6 @@ class Lox:
         tokens = scanner.scan_tokens()
         for token in tokens:
             print(token.to_string())
-
 
 def main():
     Lox.main()
