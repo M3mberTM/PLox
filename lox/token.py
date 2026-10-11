@@ -8,6 +8,5 @@ class Token:
         self.literal = literal
         self.line = line
 
-
     def to_string(self) -> str:
         return f"{self.type} {self.lexeme} {self.literal}"

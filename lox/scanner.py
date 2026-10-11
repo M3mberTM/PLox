@@ -4,6 +4,9 @@ from .token_type import TokenType
 
 
 class Scanner:
+    """
+        Main class for parsing small lexemes and forming tokens
+    """
 
     def __init__(self, source: str) -> None:
         self.source = source

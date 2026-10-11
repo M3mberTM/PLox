@@ -1,3 +1,5 @@
+from .token import Token, TokenType
+
 
 class Reporter:
 
@@ -6,6 +8,14 @@ class Reporter:
     @staticmethod
     def error(line: int, message: str):
         Reporter.report(line, "", message)
+
+    @staticmethod
+    def token_error(token: Token, message: str):
+        if token.type == TokenType.EOF:
+            Reporter.report(token.line, "at the end", message)
+        else:
+            Reporter.report(token.line, f"at '{token.lexeme}'", message)
+
 
     @staticmethod
     def report(line: int, origin: str, message: str):
