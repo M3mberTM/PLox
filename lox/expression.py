@@ -18,11 +18,13 @@ class Expression(ABC):
     @abstractmethod
     def accept(self, visitor: Visitor[R_co]) -> R_co:
         raise NotImplementedError()
+
 class Binary(Expression):
     def __init__(self, left: Expression, operator: Token, right: Expression):
         self.left = left
         self.operator = operator
         self.right = right
+
     @override
     def accept(self, visitor: Visitor[R_co]):
         return visitor.visit_binary_expression(self)
@@ -30,6 +32,7 @@ class Binary(Expression):
 class Grouping(Expression):
     def __init__(self, expression: Expression):
         self.expression = expression
+
     @override
     def accept(self, visitor: Visitor[R_co]):
         return visitor.visit_grouping_expression(self)
@@ -37,6 +40,7 @@ class Grouping(Expression):
 class Literal(Expression):
     def __init__(self, value: object):
         self.value = value
+
     @override
     def accept(self, visitor: Visitor[R_co]):
         return visitor.visit_literal_expression(self)
@@ -45,6 +49,7 @@ class Unary(Expression):
     def __init__(self, operator: Token, right: Expression):
         self.operator = operator
         self.right = right
+
     @override
     def accept(self, visitor: Visitor[R_co]):
         return visitor.visit_unary_expression(self)

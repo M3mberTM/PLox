@@ -40,7 +40,7 @@ class GenerateAst:
         writer.write(f"    def __init__(self, {fields}):\n")
         for field in fields.split(","):
             name = field.split(":")[0].strip()
-            writer.write(f"        self.{name} = {name}\n")
+            writer.write(f"        self.{name} = {name}\n\n")
         writer.write("    @override\n")
         writer.write("    def accept(self, visitor: Visitor[R_co]):\n")
         writer.write(f"        return visitor.visit_{class_name.lower()}_{base_name.lower()}(self)")
