@@ -68,6 +68,10 @@ class Scanner:
                 self.create_token(TokenType.STAR)
             case ";":
                 self.create_token(TokenType.SEMICOLON)
+            case "?":
+                self.create_token(TokenType.QUESTION)
+            case ":":
+                self.create_token(TokenType.COLON)
             # single character lexemes that can connect to other ones
             case "!":
                 token = TokenType.BANG_EQUAL if self.match("=") else TokenType.BANG

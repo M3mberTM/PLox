@@ -1,5 +1,13 @@
 from .errors import Reporter
-from .expression import Binary, Expression, Grouping, Literal, Unary
+from .expression import (
+    Binary,
+    CommaExpr,
+    Conditional,
+    Expression,
+    Grouping,
+    Literal,
+    Unary,
+)
 from .token import Token, TokenType
 
 
@@ -16,7 +24,28 @@ class Parser:
         self.tokens = tokens
 
     def _expression(self) -> Expression:
-        return self._equality()
+        return self._comma()
+
+    def _comma(self) -> Expression:
+        expr = self._ternary()
+
+        while self._match(TokenType.COMMA):
+            right = self._ternary()
+            expr = CommaExpr(expr, right)
+
+        return expr
+
+    def _ternary(self) -> Expression:
+        expr = self._equality()
+
+        if self._match(TokenType.QUESTION):
+            left = self._expression()
+            self._consume(TokenType.COLON, "Ternary operator requires a colon between statements")
+            right = self._ternary()
+            expr = Conditional(expr, left, right)
+
+        return expr
+
 
     def _equality(self) -> Expression:
         expr = self._comparison()
@@ -80,7 +109,7 @@ class Parser:
 
         if self._match(TokenType.LEFT_PAREN):
             expr = self._expression()
-            self._consume(TokenType.RIGHT_PAREN, "Expect ')' after expression")
+            self._consume(TokenType.RIGHT_PAREN, "Expected ')' after expression")
             return Grouping(expr)
 
         raise self._error(self._peek(), "Invalid token")
@@ -120,3 +149,36 @@ class Parser:
     def _error(self, token: Token, msg: str):
         Reporter.token_error(token, msg)
         return ParseError(msg)
+
+    def _synchronize(self):
+        self._advance()
+
+        while not self._is_at_the_end():
+            if self._previous().type == TokenType.SEMICOLON:
+                return
+
+            match self._peek().type:
+                case TokenType.CLASS:
+                    pass
+                case TokenType.FUN:
+                    pass
+                case TokenType.VAR:
+                    pass
+                case TokenType.FOR:
+                    pass
+                case TokenType.IF:
+                    pass
+                case TokenType.WHILE:
+                    pass
+                case TokenType.PRINT:
+                    pass
+                case TokenType.RETURN:
+                    return
+
+            self._advance()
+
+    def parse(self) -> Expression | None:
+        try:
+            return self._expression()
+        except ParseError:
+            return None

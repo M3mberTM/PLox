@@ -14,6 +14,8 @@ class TokenType(Enum):
     SEMICOLON = auto()
     SLASH = auto()
     STAR = auto()
+    QUESTION = auto()
+    COLON = auto()
 
 
     # One or two character tokens.

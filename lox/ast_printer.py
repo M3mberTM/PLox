@@ -1,7 +1,16 @@
 from io import StringIO
 from typing import override
 
-from .expression import Binary, Expression, Grouping, Literal, Unary, Visitor
+from .expression import (
+    Binary,
+    CommaExpr,
+    Conditional,
+    Expression,
+    Grouping,
+    Literal,
+    Unary,
+    Visitor,
+)
 from .token import Token, TokenType
 
 
@@ -27,6 +36,14 @@ class AstPrinter(Visitor[str]):
     @override
     def visit_unary_expression(self, expression: Unary) -> str:
         return self.parenthesize(expression.operator.lexeme, expression.right)
+
+    @override
+    def visit_comma_expression(self, expression: CommaExpr) -> str:
+        return self.parenthesize(",", expression.left, expression.right)
+
+    @override
+    def visit_conditional_expression(self, expression: Conditional) -> str:
+        return self.parenthesize("?:", expression.condition, expression.left, expression.right)
 
     def parenthesize(self, name: str, *expressions: Expression)->str:
         builder = StringIO()
