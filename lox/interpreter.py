@@ -43,6 +43,9 @@ class Interpreter(Visitor[object]):
                 return float(cast(float, left)) - float(cast(float, right))
             case TokenType.SLASH:
                 self.check_number_operands(expression.operator, left, right)
+                if float(cast(float, right)) == 0:
+                    raise RuntimedError(expression.operator,
+                    "Zero Division error: cannot divide by zero")
                 return float(cast(float, left)) / float(cast(float, right))
             case TokenType.STAR:
                 self.check_number_operands(expression.operator, left, right)
@@ -52,6 +55,9 @@ class Interpreter(Visitor[object]):
                     return left + right
                 if isinstance(left, str) and isinstance(right, str):
                     return left + right
+
+                if isinstance(left, str) or isinstance(right, str):
+                    return self.stringify(left) + self.stringify(right)
 
                 raise RuntimedError(expression.operator,
                 "Operands must be two numbers or two strings")

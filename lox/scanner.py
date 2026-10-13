@@ -12,6 +12,7 @@ class Scanner:
         self.source = source
         self.tokens: list[Token] = []
         self.start = 0
+        self.col = 0
         self.current = 0
         self.line = 1
         self.keywords: dict[str, TokenType] = {
@@ -38,7 +39,7 @@ class Scanner:
             self.start = self.current
             self.scan_token()
 
-        self.tokens.append(Token(TokenType.EOF, "", None, self.line))
+        self.tokens.append(Token(TokenType.EOF, "", None, self.line, self.col))
         return self.tokens
 
     def is_at_end(self):
@@ -104,6 +105,7 @@ class Scanner:
                 pass
             case "\n":
                 self.line += 1
+                self.col = 0
             # longer literals
             case "\"":
                 self.string()
@@ -113,18 +115,20 @@ class Scanner:
                 elif self.is_alpha(char):
                     self.identifier()
                 else:
-                    Reporter.error(self.line, "Unexpected character")
+                    Reporter.error(self.line, self.col, "Unexpected character")
 
     def mult_comment(self):
-        while (self.peek() != "*" and self.peek_next() != "/") and not self.is_at_end():
-            self.advance()
-        # don't forget to consume the final two characters
-        if self.current >= len(self.source) - 1:
-            Reporter.error(self.line, "Unterminated multine comment")
-            return
+        while not self.is_at_end():
+            if self.peek() == "*" and self.peek_next() == "/":
+                self.advance()
+                self.advance()
+                return
+            if self.peek() == "\n":
+                self.line += 1
 
-        self.advance()
-        self.advance()
+            self.advance()
+
+        Reporter.error(self.line, self.col, "Unterminated multine comment")
 
     def identifier(self):
         while self.is_alphanumeric(self.peek()):
@@ -175,7 +179,7 @@ class Scanner:
                 self.line += 1
             self.advance()
         if self.is_at_end():
-            Reporter.error(self.line, "Unterminated string")
+            Reporter.error(self.line, self.col, "Unterminated string")
             return
 
         # closing
@@ -207,4 +211,4 @@ class Scanner:
 
     def add_token(self, token_type: TokenType, literal: object):
         text = self.source[self.start:self.current]
-        self.tokens.append(Token(token_type, text, literal, self.line))
+        self.tokens.append(Token(token_type, text, literal, self.line, self.col))

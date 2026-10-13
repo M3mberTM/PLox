@@ -25,6 +25,7 @@ class Lox:
     def run_file(path: str):
         file = open(path, "r", encoding="utf-8") # noqa
         content = file.read()
+        Reporter.set_source(content)
         Lox.run(content)
         if Reporter.had_error:
             sys.exit(65) # indicated error in the exit code
@@ -37,6 +38,7 @@ class Lox:
             line = input("> ")
             if not line:
                 break
+            Reporter.set_source(line)
             Lox.run(line)
             # if the user made a mistake in the interactive session, it shouldn't kill their whole
             # session
