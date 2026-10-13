@@ -1,4 +1,4 @@
-from .errors import Reporter
+from .errors import ParseError, Reporter
 from .expression import (
     Binary,
     CommaExpr,
@@ -10,9 +10,6 @@ from .expression import (
 )
 from .token import Token, TokenType
 
-
-class ParseError(Exception):
-    pass
 
 class Parser:
     """

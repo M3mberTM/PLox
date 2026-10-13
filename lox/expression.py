@@ -1,21 +1,27 @@
 from abc import ABC, abstractmethod
-from typing import Protocol, TypeVar
+from typing import Generic, TypeVar
 
 from .token import Token
 
 R_co = TypeVar("R_co", covariant=True)
 
-class Visitor(Protocol[R_co]):
+class Visitor(ABC, Generic[R_co]):
+    @abstractmethod
     def visit_binary_expression(self, expression: "Binary") -> R_co: ...
 
+    @abstractmethod
     def visit_grouping_expression(self, expression: "Grouping") -> R_co: ...
 
+    @abstractmethod
     def visit_literal_expression(self, expression: "Literal") -> R_co: ...
 
+    @abstractmethod
     def visit_unary_expression(self, expression: "Unary") -> R_co: ...
 
+    @abstractmethod
     def visit_comma_expression(self, expression: "CommaExpr") -> R_co: ...
 
+    @abstractmethod
     def visit_conditional_expression(self, expression: "Conditional") -> R_co: ...
 
 class Expression(ABC):

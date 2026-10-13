@@ -1,12 +1,14 @@
 import sys
 
-from .ast_printer import AstPrinter
 from .errors import Reporter
+from .interpreter import Interpreter
 from .parser import Parser
 from .scanner import Scanner
 
 
 class Lox:
+
+    interpreter = Interpreter()
 
     @staticmethod
     def main():
@@ -26,6 +28,8 @@ class Lox:
         Lox.run(content)
         if Reporter.had_error:
             sys.exit(65) # indicated error in the exit code
+        if Reporter.had_runtime_error:
+            sys.exit(70)
 
     @staticmethod
     def run_prompt():
@@ -50,7 +54,7 @@ class Lox:
         if expression is None:
             return
 
-        print(AstPrinter().print(expression))
+        Lox.interpreter.interpret(expression)
 
 
 def main():

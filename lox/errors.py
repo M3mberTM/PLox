@@ -1,9 +1,18 @@
 from .token import Token, TokenType
 
 
+class ParseError(Exception):
+    pass
+
+class RuntimedError(RuntimeError):
+    def __init__(self, token: Token, message: str) -> None:
+        super().__init__(message)
+        self.token = token
+
 class Reporter:
 
     had_error = False
+    had_runtime_error = False
 
     @staticmethod
     def error(line: int, message: str):
@@ -16,6 +25,10 @@ class Reporter:
         else:
             Reporter.report(token.line, f"at '{token.lexeme}'", message)
 
+    @staticmethod
+    def runtime_error(error: RuntimedError):
+        print(f"{error!s}\n[line {error.token.line}]")
+        Reporter.had_runtime_error = True
 
     @staticmethod
     def report(line: int, origin: str, message: str):
