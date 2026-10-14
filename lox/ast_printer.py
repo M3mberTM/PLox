@@ -11,7 +11,6 @@ from .expression import (
     Unary,
     Visitor,
 )
-from .token import Token, TokenType
 
 
 class AstPrinter(Visitor[str]):
@@ -54,12 +53,3 @@ class AstPrinter(Visitor[str]):
         builder.write(")")
 
         return builder.getvalue()
-
-
-if __name__ == "__main__":
-
-    expression = Binary(Unary(Token(TokenType.MINUS, "-", None, 1),
-        Literal(123)),
-        Token(TokenType.STAR, "*", None, 1),
-        Grouping(Literal(45.67)))
-    print(AstPrinter().print(expression))
